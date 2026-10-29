@@ -1,89 +1,128 @@
+<div align="center">
+
 # Auto Job Applier
 
-A [Claude Code / Claude agent](https://claude.com/claude-code) skill that builds an
-honest, tailored CV from your own data and applies to matching jobs across job
-boards - LinkedIn, Indeed, NaukriGulf, Bayt, and (adaptively) pretty much any other
-job site or company careers page - using browser automation.
+**A Claude agent skill that writes one honest CV and applies to jobs that actually fit — across LinkedIn, Indeed, NaukriGulf, Bayt, and anywhere else you point it.**
 
-It does not contain anyone's personal data. Every run starts from a `profile.json`
-you write about yourself; the skill never invents a name, an employer, a metric, or
-a claim that isn't in that file.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-required-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![No personal data included](https://img.shields.io/badge/personal%20data-none%20included-brightgreen)](profile.example.json)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-orange.svg)](#extending-it-to-a-new-job-site)
+
+[Why this exists](#why-this-exists) ·
+[What it does](#what-it-does) ·
+[Safety](#hard-limits-it-never-crosses) ·
+[Getting started](#getting-started) ·
+[Supported sites](#supported-sites)
+
+</div>
+
+---
+
+This repo ships **zero personal data**. Every run starts from a `profile.json` you
+write about yourself — the skill never invents a name, an employer, a metric, or a
+claim that isn't in that file. Clone it, drop in your own profile, and it works for
+you; nobody else's history is in here to leak.
 
 ## Why this exists
 
-Mass-applying to jobs usually fails in one of two ways:
+Mass-applying to jobs usually fails in one of two ways, and most "auto apply"
+tools only make the first one worse:
 
-1. **The CV oversells.** A different seniority claim pasted into every version,
-   metrics that aren't real, "years of experience" that don't add up - all of which
-   reads as templated to a recruiter and as inconsistent to anyone who checks.
-2. **The applications don't fit.** Applying to roles that want 5+ years with a
-   2-year background wastes everyone's time, no matter how well the CV is written.
-
-This skill fixes both: it builds one consistent, defensible CV per role straight
-from real profile data, and it filters job listings against your actual years of
-experience before applying to them. See [`references/cv-honesty.md`](references/cv-honesty.md)
-for the full story.
+| Failure mode | What it looks like | What this skill does instead |
+|---|---|---|
+| **The CV oversells** | Every version repeats the same inflated seniority line, with metrics that aren't real and a "years of experience" that doesn't add up. Reads as templated to a recruiter and inconsistent to anyone who checks. | Builds one consistent, defensible CV per role, straight from real profile data. No invented scope, no copy-pasted seniority claims — see [`references/cv-honesty.md`](references/cv-honesty.md). |
+| **The applications don't fit** | Blasting every listing with "AI Engineer" in the title, including roles that want 5+ years against a 2-year background. No amount of good writing fixes an experience mismatch. | Filters job listings against your real `years_experience` *before* applying, and tells you what it skipped and why. |
 
 ## What it does
 
-1. **Reads your profile.** `profile.json` (schema in [`profile.schema.json`](profile.schema.json),
-   example in [`profile.example.json`](profile.example.json)) - your real work
-   history, skills, education, and contact details.
-2. **Builds a CV.** `cvgen/build.js` renders a clean, ATS-safe PDF per role, with
-   wording the `years_experience` field in your profile can actually back up. See
+1. **Reads your profile** — `profile.json` ([schema](profile.schema.json),
+   [example](profile.example.json)): your real work history, skills, education,
+   and contact details, and nothing it had to guess at.
+2. **Builds a CV** — [`cvgen/build.js`](cvgen/build.js) renders a clean, ATS-safe
+   PDF per role, in wording your `years_experience` can actually back up. Plain
+   bulleted skills, not tables that scramble ATS text extraction. See
    [`cvgen/README.md`](cvgen/README.md).
-3. **Searches and filters.** Looks for roles matching your target titles/skills,
-   and skips ones whose stated experience requirement is well outside your real
-   band, telling you what it skipped and why.
-4. **Applies, adapting to whatever each site does.** Follows the per-platform notes
-   in [`references/platforms/`](references/platforms) for sites it already knows,
-   and a general adaptive strategy ([`references/platforms/generic-fallback.md`](references/platforms/generic-fallback.md))
-   for anything new - including writing a new platform note once it's worked a new
-   site out, so the next run doesn't start from scratch.
-5. **Logs everything.** One row per application in `applications.csv`, so you (or
-   the agent, next time) can see exactly what was applied to, skipped, or left for
-   you to finish, and why.
+3. **Searches and filters** — matches your target titles/skills, skips listings
+   whose stated experience requirement is well outside your real band, and says
+   why instead of silently either applying or skipping.
+4. **Applies, adapting to whatever the site does** — follows the per-platform
+   notes in [`references/platforms/`](references/platforms) for sites it already
+   knows, and a general adaptive strategy
+   ([`generic-fallback.md`](references/platforms/generic-fallback.md)) for
+   anything new, including writing a new platform note once it figures a site
+   out, so the next run doesn't start from scratch.
+5. **Logs everything** — one row per application in `applications.csv`, so you
+   (or the agent, next session) can see exactly what was applied to, skipped, or
+   left for you to finish, and why.
+
+## Supported sites
+
+| Platform | Status |
+|---|---|
+| LinkedIn | Built in — [`references/platforms/linkedin.md`](references/platforms/linkedin.md) |
+| Indeed | Built in — [`references/platforms/indeed.md`](references/platforms/indeed.md) |
+| NaukriGulf / Naukri | Built in — [`references/platforms/naukrigulf.md`](references/platforms/naukrigulf.md) |
+| Bayt | Built in — [`references/platforms/bayt.md`](references/platforms/bayt.md) |
+| Any other job board or ATS (Greenhouse, Lever, Workday, Zoho Recruit, a company's own careers page...) | Handled adaptively via [`generic-fallback.md`](references/platforms/generic-fallback.md) — the skill works out the site's flow live and can write a new reference file for it |
 
 ## Hard limits it never crosses
 
-This agent never solves a CAPTCHA, never types a password, never creates an
-account on your behalf without asking, never invents a salary or years-of-
-experience figure, and never pays anything to apply anywhere. Full detail in
-[`references/safety-and-boundaries.md`](references/safety-and-boundaries.md) -
-read this before your first run.
+This agent **never**:
+
+- Solves a CAPTCHA — it pauses and asks you to.
+- Types a password, or creates an account on your behalf without asking.
+- Invents a salary or years-of-experience figure for a required field.
+- Pays anything, anywhere, to apply.
+
+Full detail in [`references/safety-and-boundaries.md`](references/safety-and-boundaries.md)
+— read it before your first run.
 
 ## Requirements
 
-- An agent harness that can install skills and drive a browser - this was built for
-  and tested with Claude Code / Claude Desktop with a Chrome-automation tool
-  available (e.g. the "Claude in Chrome" extension or an equivalent in-app
-  browser), but the instructions are written generically enough to adapt to any
-  harness with comparable browser-automation and file-tool capabilities.
-- Node.js, for the CV builder.
-- A Chromium-based browser installed (Chrome or Edge) for rendering CV PDFs. See
-  [`cvgen/README.md`](cvgen/README.md) if it's not in a location the script
-  auto-detects.
+- An agent harness that can install skills and drive a browser. Built for and
+  tested with **Claude Code / Claude Desktop** plus a Chrome-automation tool
+  (e.g. the "Claude in Chrome" extension or an equivalent in-app browser), but
+  written generically enough to adapt to any harness with comparable
+  browser-automation and file-tool capabilities.
+- **Node.js** for the CV builder (no npm packages needed).
+- A **Chromium-based browser** (Chrome or Edge) installed, for rendering CV PDFs.
+  See [`cvgen/README.md`](cvgen/README.md) if it's somewhere the script doesn't
+  auto-detect.
 
 ## Getting started
 
-1. Clone or copy this skill into wherever your agent harness looks for skills.
-2. Copy `profile.example.json` to `profile.json` **in your own project directory,
-   not inside this skill folder**, and fill in your real information - or just ask
-   your agent to help you build it from an existing CV/resume file. Never commit
-   your real `profile.json` anywhere public; `.gitignore` already excludes it.
-3. Tell your agent what you want, e.g. "apply to backend engineer roles in Austin
-   matching my profile" or "build my CV and apply on LinkedIn and Indeed." The
-   skill's `SKILL.md` carries the rest of the workflow from there.
-4. Review `applications.csv` after each session to see what happened.
+```bash
+# 1. Clone it into wherever your agent harness looks for skills
+git clone https://github.com/qaaayyyummm/Auto_Job_applier.git
+
+# 2. Copy the example profile into YOUR OWN project directory (not this folder)
+#    and fill in your real information
+cp Auto_Job_applier/profile.example.json /path/to/your/project/profile.json
+```
+
+Then just talk to your agent:
+
+> "Build my CV from my profile and apply to backend engineer roles in Austin on
+> LinkedIn and Indeed."
+
+`SKILL.md` carries the rest of the workflow from there — reading your profile,
+generating a tailored CV, filtering listings, and applying. Review
+`applications.csv` afterward to see exactly what happened.
+
+> [!IMPORTANT]
+> Never commit your real `profile.json` or `applications.csv` anywhere public —
+> `.gitignore` already excludes both, keep that if you fork or restructure this
+> skill.
 
 ## Extending it to a new job site
 
 Found a site that isn't in `references/platforms/` yet? Run the skill against it
-once - it'll follow `generic-fallback.md` and, per the skill's own instructions,
-write a new `references/platforms/<site>.md` capturing what it learned (how
-sign-in works, single-page vs. multi-step, resume-upload quirks, anything the site
-does differently). Open a pull request with that new file. That's the main way
-this project is meant to grow: real runs against real sites, captured back for
+once — it follows `generic-fallback.md` and, per the skill's own instructions,
+writes a new `references/platforms/<site>.md` capturing what it learned (sign-in
+behavior, single-page vs. multi-step, resume-upload quirks, anything the site
+does differently). Open a pull request with that new file — this is the main way
+the project is meant to grow: real runs against real sites, captured back for
 everyone else.
 
 ## Project layout
@@ -111,5 +150,6 @@ Auto_Job_applier/
 
 ## License
 
-MIT - see [`LICENSE`](LICENSE). Use it, fork it, extend it; just don't commit
-anyone's real `profile.json` or `applications.csv` into a public copy of this repo.
+MIT — see [`LICENSE`](LICENSE). Use it, fork it, extend it to new sites; just
+never commit anyone's real `profile.json` or `applications.csv` into a public
+copy of this repo.
