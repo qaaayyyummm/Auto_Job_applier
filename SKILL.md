@@ -55,33 +55,7 @@ Keep `profile.json` the single source of truth. Don't hardcode names, emails, or
 employers anywhere else in this skill, in the CV template, or in your own messages
 to the user once a session is running — always re-read the field from the profile.
 
-## Step 1: Generate an honest, tailored CV
-
-Run the builder:
-
-```bash
-node cvgen/build.js <profile.json> <output-dir> [role-code]
-```
-
-See `cvgen/README.md` for the full CLI and `cvgen/variants.schema.json` for how to
-define per-role tailoring (title, summary emphasis, which skill groups and project
-bullets to surface). The builder:
-
-- Pulls every fact (name, contact, employer, dates, skills, projects) from
-  `profile.json` — it has no fallback data of its own.
-- Produces one clean, ATS-safe PDF per role: plain bulleted lists (not tables, which
-  can scramble ATS text extraction), one consistent experience timeline, and no
-  seniority language the profile's `years_experience` can't back up.
-- Never invents metrics, scale numbers, or achievements not present in
-  `profile.json`. If a role needs something the profile doesn't have (e.g. "built
-  something with 99.9% uptime"), ask the user for the real number or leave it out —
-  see `references/cv-honesty.md` for why this matters more than it looks like it does.
-
-Before applying anywhere, read the generated CV back and sanity-check it against
-`profile.json.years_experience`: if the CV's tone implies more seniority than the
-number supports, fix the template wording, don't just apply anyway.
-
-## Step 2: Find roles that actually match
+## Step 1: Find roles that actually match
 
 For each platform the user wants to search (or all of them if they don't specify),
 search using the user's real target titles/skills from `profile.json`, then filter
@@ -94,6 +68,48 @@ language fluency, a credential — rather than applying and hoping.
 Tell the user what you skipped and why in one line per skip; don't apply to
 long-shots silently and don't silently skip something that's actually close — when in
 doubt on fit, ask.
+
+The result of this step is a shortlist: every listing the person is genuinely
+eligible for. Step 2 builds one CV per listing on that shortlist — not one generic
+CV reused everywhere, and not something that requires the user to have
+pre-authored a role for it.
+
+## Step 2: Build one tailored, honest CV per eligible listing
+
+For every listing on the shortlist, add (or reuse, if a near-identical role was
+already covered) a role variant in `variants.json` next to the user's
+`profile.json`, then build it:
+
+```bash
+node cvgen/build.js <profile.json> <output-dir> <role-code> [variants.json]
+```
+
+Write each variant yourself, for that specific listing — don't wait for the user to
+hand-author `variants.json` first. Read the job posting, then from what's actually
+in `profile.json`:
+
+- Pick a `title` that echoes the listing's own title/keywords where it's true to
+  the person's background.
+- Write a `summary` emphasizing the skills and employment bullets most relevant to
+  *this* listing, in the person's own voice, truthful about scope.
+- Choose which `skills` groups, `bullets` (per employment entry), and `projects`
+  to surface — see `cvgen/README.md` for the exact format.
+
+This is selection and emphasis, never invention: every word has to already be
+traceable to `profile.json`. If a listing wants something the profile genuinely
+doesn't have, that's a sign it shouldn't have made the shortlist in Step 1 — don't
+paper over the gap by writing a claim the profile doesn't support, see
+`references/cv-honesty.md`.
+
+Reuse a variant across near-duplicate listings (same employer posting the same role
+in two cities, or two postings that are functionally the same job) instead of
+generating a meaningfully identical CV twice — but a backend-heavy role and an
+ML-heavy role at the same company still deserve their own variants, because what's
+worth emphasizing genuinely differs.
+
+Before applying anywhere, read each generated CV back and sanity-check it against
+`profile.json.years_experience`: if the tone implies more seniority than the number
+supports, fix the variant, don't just apply anyway.
 
 ## Step 3: Apply, adapting to whatever the site does
 
