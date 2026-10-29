@@ -1,0 +1,13 @@
+# Personal data - never commit a real person's profile or application history
+profile.json
+applications.csv
+
+# Generated output
+cvgen/out/
+out/
+*.pdf
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+node_modules/

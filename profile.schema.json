@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Auto Job Applier user profile",
+  "description": "One person's real data. Never share this file, commit it to a public repo, or reuse it for a different person. Copy profile.example.json to profile.json and fill in your own information.",
+  "type": "object",
+  "required": ["name", "contact", "years_experience", "default_title", "education", "employment", "skills"],
+  "properties": {
+    "name": { "type": "string", "description": "Full name as it should appear on the CV." },
+    "contact": {
+      "type": "object",
+      "required": ["location", "phone", "email"],
+      "properties": {
+        "location": { "type": "string", "example": "City, Country" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "links": { "type": "array", "items": { "type": "string" }, "description": "LinkedIn/GitHub/portfolio URLs, optional." },
+        "work_authorization": { "type": "string", "description": "e.g. 'UAE employment visa (transferable)', 'US citizen', 'Requires H-1B sponsorship'. Shown on the CV and used to answer visa screening questions truthfully - never invent this." },
+        "availability": { "type": "string", "example": "Available within 1 month" }
+      }
+    },
+    "years_experience": {
+      "type": "number",
+      "description": "Real, honest total professional experience in years. This is the single number used to filter which job listings to apply to - do not inflate it."
+    },
+    "default_title": {
+      "type": "string",
+      "description": "The headline/title used on the CV when no role-specific variant overrides it, e.g. 'Backend Engineer | Python, PostgreSQL, AWS'."
+    },
+    "default_summary": {
+      "type": "string",
+      "description": "2-4 sentence professional summary in the person's own voice, truthful about scope and seniority. Role variants may override this; this is the fallback."
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["degree", "institution"],
+        "properties": {
+          "degree": { "type": "string" },
+          "field": { "type": "string" },
+          "institution": { "type": "string" },
+          "start_year": { "type": ["number", "string"] },
+          "end_year": { "type": ["number", "string"] }
+        }
+      }
+    },
+    "employment": {
+      "type": "array",
+      "description": "Most recent first. Each entry's bullets are the raw pool a role variant can pick from.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "employer", "start", "bullets"],
+        "properties": {
+          "id": { "type": "string", "description": "Short key used by variants to select bullets from this role, e.g. 'current'." },
+          "title": { "type": "string" },
+          "employer": { "type": "string" },
+          "location": { "type": "string" },
+          "start": { "type": "string", "example": "May 2025" },
+          "end": { "type": "string", "example": "Present" },
+          "bullets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "text"],
+              "properties": {
+                "id": { "type": "string" },
+                "text": { "type": "string", "description": "A real, specific, defensible thing you did. No invented metrics." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "description": "Grouped skills. Each group has an id so role variants can pick a subset to show.",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "items"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string", "example": "Backend and APIs" },
+          "items": { "type": "string", "example": "FastAPI, Django, REST, PostgreSQL" }
+        }
+      }
+    },
+    "additional": {
+      "type": "string",
+      "description": "Free-text line for languages, certifications, travel/relocation notes, etc."
+    },
+    "salary_policy": {
+      "type": "object",
+      "description": "How to answer salary screening fields, if the person wants one used. Never invented if this is absent - see references/salary-and-screening-questions.md.",
+      "properties": {
+        "volunteer_in_outreach": { "type": "boolean", "default": false, "description": "Whether salary may be mentioned unprompted in emails/cover letters. Default false." },
+        "by_market": {
+          "type": "object",
+          "description": "Map of a market label (e.g. 'remote_international', 'local_gcc') to the figure/string to use when a form requires one.",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    }
+  }
+}

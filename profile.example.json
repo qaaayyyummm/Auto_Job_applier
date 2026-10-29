@@ -1,0 +1,72 @@
+{
+  "name": "Jordan Rivera",
+  "contact": {
+    "location": "Austin, TX, USA",
+    "phone": "+1 555 010 1234",
+    "email": "jordan.rivera.example@example.com",
+    "links": ["linkedin.com/in/example", "github.com/example"],
+    "work_authorization": "US citizen, no sponsorship needed",
+    "availability": "Available within 2 weeks"
+  },
+  "years_experience": 2.5,
+  "default_title": "Backend Engineer | Python, PostgreSQL, AWS",
+  "default_summary": "Backend engineer who ships Python services that stay correct under real-world failure. I design REST APIs, background jobs and data pipelines, and I'm comfortable owning a feature from a vague ticket to a monitored production deploy.",
+  "education": [
+    {
+      "degree": "B.S.",
+      "field": "Computer Science",
+      "institution": "Example State University",
+      "start_year": 2018,
+      "end_year": 2022
+    }
+  ],
+  "employment": [
+    {
+      "id": "current",
+      "title": "Software Engineer",
+      "employer": "Example Logistics Inc.",
+      "location": "Austin, TX (hybrid)",
+      "start": "Jan 2023",
+      "end": "Present",
+      "bullets": [
+        { "id": "api", "text": "Built and maintain REST APIs (FastAPI) serving the company's shipment-tracking mobile app, including auth, rate limiting and pagination." },
+        { "id": "pipeline", "text": "Designed a nightly ETL pipeline (Python, Airflow, PostgreSQL) that reconciles carrier data from four external APIs." },
+        { "id": "oncall", "text": "Rotate on-call for the shipment-tracking service; triaged and fixed production incidents, including a deadlock in the batch-update job." },
+        { "id": "tests", "text": "Raised integration test coverage on the core shipment service from ~20% to ~70%, catching two regressions before release." }
+      ]
+    },
+    {
+      "id": "intern",
+      "title": "Software Engineering Intern",
+      "employer": "Example Analytics Co.",
+      "location": "Remote",
+      "start": "Jun 2021",
+      "end": "Aug 2021",
+      "bullets": [
+        { "id": "dashboard", "text": "Built an internal usage-analytics dashboard (Django, Chart.js) used by the product team." }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "sidepanel",
+      "name": "Package Tracker Side Project",
+      "description": "Personal project: a Python/FastAPI service that polls three shipping carriers' public APIs and sends SMS updates via Twilio; deployed on a small VPS with Docker."
+    }
+  ],
+  "skills": [
+    { "id": "lang", "label": "Languages", "items": "Python, SQL, TypeScript" },
+    { "id": "backend", "label": "Backend and APIs", "items": "FastAPI, Django, REST, Celery, async workflows" },
+    { "id": "data", "label": "Data", "items": "PostgreSQL, Redis, Airflow" },
+    { "id": "cloud", "label": "Cloud and Deployment", "items": "AWS (EC2, S3, RDS), Docker, GitHub Actions" },
+    { "id": "rel", "label": "Reliability", "items": "Testing, structured logging, on-call incident response" }
+  ],
+  "additional": "Open to relocation within the US; comfortable with occasional on-site weeks.",
+  "salary_policy": {
+    "volunteer_in_outreach": false,
+    "by_market": {
+      "remote_us": "USD 95,000/yr",
+      "local_onsite": "USD 90,000/yr"
+    }
+  }
+}

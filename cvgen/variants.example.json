@@ -1,0 +1,18 @@
+{
+  "BACKEND01": {
+    "title": "Backend Engineer | Python, FastAPI, PostgreSQL, AWS",
+    "summary": "Backend engineer who ships Python services that stay correct under real-world failure. I design REST APIs, background jobs and data pipelines, own on-call for what I build, and I'm comfortable taking a feature from a vague ticket to a monitored production deploy.",
+    "skills": ["lang", "backend", "data", "cloud", "rel"],
+    "bullets": { "current": ["api", "pipeline", "oncall", "tests"], "intern": ["dashboard"] },
+    "projects": ["sidepanel"],
+    "extra": ""
+  },
+  "DATAENG01": {
+    "title": "Data Engineer | Python, Airflow, PostgreSQL, AWS",
+    "summary": "Engineer who builds pipelines that keep running when upstream data doesn't behave. I design ETL jobs (Python, Airflow) that reconcile messy external data into clean, queryable tables, and the REST APIs and monitoring around them.",
+    "skills": ["lang", "data", "backend", "cloud", "rel"],
+    "bullets": { "current": ["pipeline", "tests", "api"], "intern": ["dashboard"] },
+    "projects": ["sidepanel"],
+    "extra": "Open to data platform / analytics engineering titles as well"
+  }
+}
