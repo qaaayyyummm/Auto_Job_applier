@@ -14,7 +14,6 @@
 [What it does](#what-it-does) ·
 [Safety](#hard-limits-it-never-crosses) ·
 [Getting started](#getting-started) ·
-[Use it from any AI agent (MCP)](#use-it-from-any-ai-agent-mcp) ·
 [Supported sites](#supported-sites)
 
 </div>
@@ -94,59 +93,52 @@ Full detail in [`references/safety-and-boundaries.md`](references/safety-and-bou
 
 ## Getting started
 
+**No clone needed.** This one command detects which AI agents you actually
+have installed — Claude Desktop, Claude Code, Cursor, Windsurf, VS Code —
+and adds Auto Job Applier to every one it finds, as both an MCP server and
+(for Claude Code) a native Agent Skill:
+
 ```bash
-# 1. Clone the skill
-git clone https://github.com/qaaayyyummm/Auto_Job_applier.git
-
-# 2. Make your own project folder (keep it separate from the skill folder)
-mkdir ~/my-job-search
-cp Auto_Job_applier/profile.example.json ~/my-job-search/profile.json
-
-# 3. Edit profile.json with your real info (or ask your agent to interview you)
-
-# 4. Start your agent inside that folder
-cd ~/my-job-search
-claude
+npx -y github:qaaayyyummm/Auto_Job_applier
 ```
 
-5. Ask it: *"Build my CV from my profile and apply to backend engineer roles
-   on LinkedIn and Indeed."*
-6. Check `applications.csv` afterward to see what it did.
+It never touches a tool it doesn't detect, and it backs up any config file
+before changing it. Run it with `--list` first if you just want to preview
+what it would do:
+
+```bash
+npx -y github:qaaayyyummm/Auto_Job_applier --list
+```
+
+Restart whichever agent(s) were already running, then just talk to it:
+
+> "Build my CV from my profile and apply to backend engineer roles on
+> LinkedIn and Indeed."
+
+The agent will ask for your profile info the first time (or read it from a
+`profile.json` you point it at) — nothing about you lives in this repo.
+Check `applications.csv` afterward to see what it did.
 
 > [!IMPORTANT]
 > Never commit your real `profile.json` or `applications.csv` anywhere public
-> — `.gitignore` already excludes both.
+> — `.gitignore` already excludes both, if you do clone this repo.
 
-## Use it from any AI agent (MCP)
+The MCP server never drives a browser itself — your agent still needs its
+own browser tool for the actual apply step; this just gives any agent the
+same profile/CV/filtering/logging logic.
 
-The steps above are for Claude, loading this as an **Agent Skill**. This
-repo also ships as an MCP server, so the same CV generation, job-fit
-filtering, and logging work in Cursor, Windsurf, VS Code's agent mode, or
-anything else that speaks [MCP](https://modelcontextprotocol.io).
-
-**One command installs it everywhere it finds on your machine** — it
-detects which of Claude Desktop, Claude Code, Cursor, Windsurf, and VS Code
-you actually have installed, and registers the MCP server (and, for Claude
-Code, the native Agent Skill) with each one. It never touches a tool it
-doesn't detect, and it backs up any config file before changing it:
+### Prefer to clone it?
 
 ```bash
 git clone https://github.com/qaaayyyummm/Auto_Job_applier.git
-cd Auto_Job_applier/mcp-server && npm install && cd ..
-node scripts/install-everywhere.js
+cd Auto_Job_applier && npm install
+node scripts/install-everywhere.js --local   # points configs at this local copy instead of npx
 ```
 
-Run `node scripts/install-everywhere.js --list` first if you just want to
-see what it would detect and change, without writing anything. Restart
-whichever agent(s) were already running afterward so they pick up the new
-server.
-
-Prefer to wire up just one agent by hand? Full tool list and per-client
-config snippets are in [`mcp-server/README.md`](mcp-server/README.md).
-
-Either way, the MCP server never drives a browser itself — your agent still
-needs its own browser tool for the actual apply step; this just gives any
-agent the same profile/CV/filtering/logging logic the Claude skill uses.
+Useful if you're offline-first, want to edit the skill yourself, or are
+contributing a new platform file. Full tool list, per-client config
+snippets, and the difference between `--local` and the npx default are in
+[`mcp-server/README.md`](mcp-server/README.md).
 
 ## Extending it to a new job site
 
@@ -162,6 +154,7 @@ everyone else.
 
 ```
 Auto_Job_applier/
+├── package.json                 # root package - what `npx github:...` installs and runs
 ├── SKILL.md                     # the skill itself - read this first
 ├── profile.schema.json          # shape of profile.json
 ├── profile.example.json         # fictional example, safe to read/commit
@@ -171,9 +164,9 @@ Auto_Job_applier/
 │   └── variants.example.json    # example per-role tailoring
 ├── mcp-server/                  # MCP server - use this skill from any MCP agent
 │   ├── index.js
-│   ├── package.json
 │   └── README.md
 ├── scripts/
+│   ├── cli.js                   # unified entry point (install | mcp)
 │   └── install-everywhere.js    # detects installed agents, registers this skill with each
 └── references/
     ├── safety-and-boundaries.md

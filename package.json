@@ -1,0 +1,18 @@
+{
+  "name": "auto-job-applier",
+  "version": "1.0.0",
+  "description": "Generates a tailored, honest CV from your own profile and applies to jobs across job sites — as a Claude Agent Skill and as an MCP server any AI agent can use.",
+  "type": "module",
+  "bin": {
+    "auto-job-applier": "./scripts/cli.js"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qaaayyyummm/Auto_Job_applier.git"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^4.6.7"
+  }
+}

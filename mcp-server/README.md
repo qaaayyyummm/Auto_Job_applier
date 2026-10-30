@@ -30,35 +30,50 @@ tailored CV, and logging what happened.
 No personal data lives in this server or its code — every tool takes a path
 or payload the calling agent supplies, same as the rest of this repo.
 
-## Install
+## Install everywhere at once (recommended, no clone needed)
 
 ```bash
-cd mcp-server
-npm install
+npx -y github:qaaayyyummm/Auto_Job_applier
 ```
 
-## Install everywhere at once
+This detects which of Claude Desktop, Claude Code, Cursor, Windsurf, and
+VS Code are actually installed on this machine, and registers this server
+with each one it finds (plus a native Agent Skill copy for Claude Code).
+It only touches an agent it actually detects, and it backs up any config
+file (`<file>.bak`) the first time it edits it.
 
-From the repo root, `scripts/install-everywhere.js` detects which of
-Claude Desktop, Claude Code, Cursor, Windsurf, and VS Code are actually
-installed on this machine, and registers this server with each one it
-finds (plus a native Agent Skill copy for Claude Code):
+- `--list` — only report what it would detect and change.
+- `--dry-run` — preview the exact edits without writing anything.
+- `--local` — write config entries that point at a local clone instead of
+  `npx ... mcp` (see below). Use this if you've cloned the repo and want
+  agents to run your local copy directly.
 
-```bash
-node ../scripts/install-everywhere.js
-```
+The config entries this writes run the server as `npx -y
+github:qaaayyyummm/Auto_Job_applier mcp` — so the agents you register don't
+need a local clone either; npx fetches and caches this repo from GitHub the
+first time each agent starts the server.
 
-Pass `--list` to only see what it would detect and change, or `--dry-run`
-to preview the exact edits without writing anything. It only touches an
-agent it actually detects, and it backs up any config file (`<file>.bak`)
-the first time it edits it. Everything below is what that script does
-automatically — read on if you'd rather wire up one client by hand.
+Everything below is what that script does automatically — read on if you'd
+rather wire up one client by hand, or understand what it wrote.
 
-## Connect it to your agent
+## Connect it to your agent manually
 
 Most MCP clients use a config file with a `mcpServers` (or `servers`) block
 pointing at a command to run. The exact file differs per client, but the
 entry looks the same everywhere:
+
+```json
+{
+  "mcpServers": {
+    "auto-job-applier": {
+      "command": "npx",
+      "args": ["-y", "github:qaaayyyummm/Auto_Job_applier", "mcp"]
+    }
+  }
+}
+```
+
+If you've cloned the repo and would rather run your local copy:
 
 ```json
 {
@@ -71,10 +86,13 @@ entry looks the same everywhere:
 }
 ```
 
-- **Claude Desktop**: Settings → Developer → Edit Config, add the block above.
-- **Claude Code**: `claude mcp add auto-job-applier -- node /absolute/path/to/Auto_Job_applier/mcp-server/index.js`
-- **Cursor**: `.cursor/mcp.json` in your project, same block.
+- **Claude Desktop**: Settings → Developer → Edit Config, add one of the blocks above.
+- **Claude Code**: `claude mcp add auto-job-applier --scope user -- npx -y github:qaaayyyummm/Auto_Job_applier mcp`
+- **Cursor**: `~/.cursor/mcp.json`, same block.
 - **Windsurf**: `~/.codeium/windsurf/mcp_config.json`, same block.
+- **VS Code**: `%APPDATA%/Code/User/mcp.json` (or your platform's
+  equivalent), under a top-level `"servers"` key with `"type": "stdio"`
+  added to the entry.
 - **Any other MCP-compatible agent**: check its docs for where it reads
   `mcpServers` from — the block itself is portable.
 

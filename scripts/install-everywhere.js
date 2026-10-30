@@ -16,10 +16,18 @@
 // Safe to re-run: it merges into existing config rather than overwriting,
 // and writing the same entry twice is a no-op diff.
 //
+// By default, the config entries it writes run the server via
+// `npx -y github:qaaayyyummm/Auto_Job_applier mcp` — so the agents it
+// configures don't need a local clone of this repo either; npx fetches and
+// caches it from GitHub the first time they start it. Pass --local if
+// you've cloned this repo and want agents to run your local copy directly
+// instead (handy for development).
+//
 // Usage:
 //   node scripts/install-everywhere.js          # detect + install
 //   node scripts/install-everywhere.js --dry-run   # show what would happen, change nothing
 //   node scripts/install-everywhere.js --list      # only report what's detected
+//   node scripts/install-everywhere.js --local     # point configs at this local checkout instead of npx
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, cpSync } from "node:fs";
 import { homedir, platform } from "node:os";
@@ -30,10 +38,12 @@ import { fileURLToPath } from "node:url";
 const REPO_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const MCP_ENTRY_POINT = path.join(REPO_ROOT, "mcp-server", "index.js");
 const SERVER_NAME = "auto-job-applier";
+const GITHUB_SPEC = "github:qaaayyyummm/Auto_Job_applier";
 
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
 const LIST_ONLY = args.includes("--list");
+const LOCAL = args.includes("--local");
 
 const home = homedir();
 const os = platform(); // 'win32' | 'darwin' | 'linux'
@@ -100,8 +110,10 @@ function writeMcpEntry(label, configPath, serversKey, entry) {
   console.log(`[done] ${label} — registered in ${configPath}`);
 }
 
-const mcpEntry = { command: "node", args: [MCP_ENTRY_POINT] };
-const vscodeEntry = { type: "stdio", command: "node", args: [MCP_ENTRY_POINT] };
+const mcpEntry = LOCAL
+  ? { command: "node", args: [MCP_ENTRY_POINT] }
+  : { command: "npx", args: ["-y", GITHUB_SPEC, "mcp"] };
+const vscodeEntry = { type: "stdio", ...mcpEntry };
 
 let anyDetected = false;
 
@@ -133,15 +145,18 @@ let anyDetected = false;
 
   if (hasCli) {
     anyDetected = true;
+    const cliTail = LOCAL
+      ? ["node", MCP_ENTRY_POINT]
+      : ["npx", "-y", GITHUB_SPEC, "mcp"];
     if (LIST_ONLY) {
       console.log("[detected] Claude Code CLI — would run `claude mcp add`.");
     } else if (DRY_RUN) {
-      console.log("[dry-run] Claude Code CLI — would run `claude mcp add auto-job-applier --scope user -- node ...`");
+      console.log(`[dry-run] Claude Code CLI — would run \`claude mcp add ${SERVER_NAME} --scope user -- ${cliTail.join(" ")}\``);
     } else {
       try {
         execFileSync(
           "claude",
-          ["mcp", "add", SERVER_NAME, "--scope", "user", "--", "node", MCP_ENTRY_POINT],
+          ["mcp", "add", SERVER_NAME, "--scope", "user", "--", ...cliTail],
           { stdio: "inherit" }
         );
         console.log("[done] Claude Code — registered via `claude mcp add`.");
