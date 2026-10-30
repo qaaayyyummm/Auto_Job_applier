@@ -8,11 +8,13 @@
 [![Node.js](https://img.shields.io/badge/Node.js-required-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![No personal data included](https://img.shields.io/badge/personal%20data-none%20included-brightgreen)](profile.example.json)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-orange.svg)](#extending-it-to-a-new-job-site)
+[![MCP compatible](https://img.shields.io/badge/MCP-compatible-5A45FF)](mcp-server/README.md)
 
 [Why this exists](#why-this-exists) ·
 [What it does](#what-it-does) ·
 [Safety](#hard-limits-it-never-crosses) ·
 [Getting started](#getting-started) ·
+[Use it from any AI agent (MCP)](#use-it-from-any-ai-agent-mcp) ·
 [Supported sites](#supported-sites)
 
 </div>
@@ -115,6 +117,38 @@ claude
 > Never commit your real `profile.json` or `applications.csv` anywhere public
 > — `.gitignore` already excludes both.
 
+## Use it from any AI agent (MCP)
+
+The steps above are for Claude, loading this as an **Agent Skill**. If
+you're on a different agent — Cursor, Windsurf, VS Code's agent mode,
+ChatGPT's agent tools, or anything else that speaks
+[MCP](https://modelcontextprotocol.io) — this repo also ships as an MCP
+server, so the same CV generation, job-fit filtering, and logging work
+there too:
+
+```bash
+cd mcp-server
+npm install
+```
+
+Then point your agent's MCP config at it:
+
+```json
+{
+  "mcpServers": {
+    "auto-job-applier": {
+      "command": "node",
+      "args": ["/absolute/path/to/Auto_Job_applier/mcp-server/index.js"]
+    }
+  }
+}
+```
+
+Full tool list and per-client setup in [`mcp-server/README.md`](mcp-server/README.md).
+The MCP server never drives a browser itself — your agent still needs its
+own browser tool for the actual apply step; this just gives any agent the
+same profile/CV/filtering/logging logic the Claude skill uses.
+
 ## Extending it to a new job site
 
 Found a site that isn't in `references/platforms/` yet? Run the skill against it
@@ -136,6 +170,10 @@ Auto_Job_applier/
 │   ├── build.js                 # the CV builder (Node, no dependencies)
 │   ├── README.md
 │   └── variants.example.json    # example per-role tailoring
+├── mcp-server/                  # MCP server - use this skill from any MCP agent
+│   ├── index.js
+│   ├── package.json
+│   └── README.md
 └── references/
     ├── safety-and-boundaries.md
     ├── cv-honesty.md

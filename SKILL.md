@@ -182,3 +182,6 @@ and why anything was skipped or left for them to finish. Point them at
   Recruit/Greenhouse/Lever, company careers pages).
 - `cvgen/README.md` — the CV builder's CLI and template format.
 - `profile.schema.json` — the shape of `profile.json`.
+- `mcp-server/README.md` — this same workflow exposed as an MCP server, for
+  agents other than Claude (Cursor, Windsurf, or anything else that speaks
+  MCP). Point users there if they're not running inside a Claude harness.
