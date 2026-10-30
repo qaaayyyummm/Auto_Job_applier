@@ -119,35 +119,34 @@ claude
 
 ## Use it from any AI agent (MCP)
 
-The steps above are for Claude, loading this as an **Agent Skill**. If
-you're on a different agent — Cursor, Windsurf, VS Code's agent mode,
-ChatGPT's agent tools, or anything else that speaks
-[MCP](https://modelcontextprotocol.io) — this repo also ships as an MCP
-server, so the same CV generation, job-fit filtering, and logging work
-there too:
+The steps above are for Claude, loading this as an **Agent Skill**. This
+repo also ships as an MCP server, so the same CV generation, job-fit
+filtering, and logging work in Cursor, Windsurf, VS Code's agent mode, or
+anything else that speaks [MCP](https://modelcontextprotocol.io).
+
+**One command installs it everywhere it finds on your machine** — it
+detects which of Claude Desktop, Claude Code, Cursor, Windsurf, and VS Code
+you actually have installed, and registers the MCP server (and, for Claude
+Code, the native Agent Skill) with each one. It never touches a tool it
+doesn't detect, and it backs up any config file before changing it:
 
 ```bash
-cd mcp-server
-npm install
+git clone https://github.com/qaaayyyummm/Auto_Job_applier.git
+cd Auto_Job_applier/mcp-server && npm install && cd ..
+node scripts/install-everywhere.js
 ```
 
-Then point your agent's MCP config at it:
+Run `node scripts/install-everywhere.js --list` first if you just want to
+see what it would detect and change, without writing anything. Restart
+whichever agent(s) were already running afterward so they pick up the new
+server.
 
-```json
-{
-  "mcpServers": {
-    "auto-job-applier": {
-      "command": "node",
-      "args": ["/absolute/path/to/Auto_Job_applier/mcp-server/index.js"]
-    }
-  }
-}
-```
+Prefer to wire up just one agent by hand? Full tool list and per-client
+config snippets are in [`mcp-server/README.md`](mcp-server/README.md).
 
-Full tool list and per-client setup in [`mcp-server/README.md`](mcp-server/README.md).
-The MCP server never drives a browser itself — your agent still needs its
-own browser tool for the actual apply step; this just gives any agent the
-same profile/CV/filtering/logging logic the Claude skill uses.
+Either way, the MCP server never drives a browser itself — your agent still
+needs its own browser tool for the actual apply step; this just gives any
+agent the same profile/CV/filtering/logging logic the Claude skill uses.
 
 ## Extending it to a new job site
 
@@ -174,6 +173,8 @@ Auto_Job_applier/
 │   ├── index.js
 │   ├── package.json
 │   └── README.md
+├── scripts/
+│   └── install-everywhere.js    # detects installed agents, registers this skill with each
 └── references/
     ├── safety-and-boundaries.md
     ├── cv-honesty.md

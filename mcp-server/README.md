@@ -37,6 +37,23 @@ cd mcp-server
 npm install
 ```
 
+## Install everywhere at once
+
+From the repo root, `scripts/install-everywhere.js` detects which of
+Claude Desktop, Claude Code, Cursor, Windsurf, and VS Code are actually
+installed on this machine, and registers this server with each one it
+finds (plus a native Agent Skill copy for Claude Code):
+
+```bash
+node ../scripts/install-everywhere.js
+```
+
+Pass `--list` to only see what it would detect and change, or `--dry-run`
+to preview the exact edits without writing anything. It only touches an
+agent it actually detects, and it backs up any config file (`<file>.bak`)
+the first time it edits it. Everything below is what that script does
+automatically — read on if you'd rather wire up one client by hand.
+
 ## Connect it to your agent
 
 Most MCP clients use a config file with a `mcpServers` (or `servers`) block
