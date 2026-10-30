@@ -93,27 +93,27 @@ Full detail in [`references/safety-and-boundaries.md`](references/safety-and-bou
 ## Getting started
 
 ```bash
-# 1. Clone it into wherever your agent harness looks for skills
+# 1. Clone the skill
 git clone https://github.com/qaaayyyummm/Auto_Job_applier.git
 
-# 2. Copy the example profile into YOUR OWN project directory (not this folder)
-#    and fill in your real information
-cp Auto_Job_applier/profile.example.json /path/to/your/project/profile.json
+# 2. Make your own project folder (keep it separate from the skill folder)
+mkdir ~/my-job-search
+cp Auto_Job_applier/profile.example.json ~/my-job-search/profile.json
+
+# 3. Edit profile.json with your real info (or ask your agent to interview you)
+
+# 4. Start your agent inside that folder
+cd ~/my-job-search
+claude
 ```
 
-Then just talk to your agent:
-
-> "Build my CV from my profile and apply to backend engineer roles in Austin on
-> LinkedIn and Indeed."
-
-`SKILL.md` carries the rest of the workflow from there — reading your profile,
-generating a tailored CV, filtering listings, and applying. Review
-`applications.csv` afterward to see exactly what happened.
+5. Ask it: *"Build my CV from my profile and apply to backend engineer roles
+   on LinkedIn and Indeed."*
+6. Check `applications.csv` afterward to see what it did.
 
 > [!IMPORTANT]
-> Never commit your real `profile.json` or `applications.csv` anywhere public —
-> `.gitignore` already excludes both, keep that if you fork or restructure this
-> skill.
+> Never commit your real `profile.json` or `applications.csv` anywhere public
+> — `.gitignore` already excludes both.
 
 ## Extending it to a new job site
 
